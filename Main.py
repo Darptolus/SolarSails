@@ -2,39 +2,69 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
-fig, ax = plt.subplots()
-xdata, ydata = [], []
-ln, = ax.plot([], [], 'ro')
-fig, ax = plt.subplots()
+# Create figure and axes
+fig, ax = plt.subplots(figsize=(9,9))
 
-def create_circle():
-    circle = plt.Circle((0, 0), radius = 30, fill = False)
-    return circle
-def create_smallcircle():
-    smallcircle = plt.Circle((30, 0), radius = 5, fill = False)
-    return smallcircle
-def update(frame):
-    xdata.append(frame)
+# Set up plot limits
+# The astronomical unit [AU] (150,000,000 km)
+# 1 Billion km = 1,000'000,000 km
+# Perihelion - Aphelion
+# Mercury   0.307-0.588 AU  or  45.9–88.0       million km  AVG 0.4475  AU
+# Venus     0.718-0.728 AU  or  107.4–108.9     million km  AVG 0.723   AU
+# Earth     0.983-1.017 AU  or  147.1–152.1     million km  AVG 1       AU
+# Mars      1.382-1.666 AU  or  206.7–249.2     million km  AVG 1.524   AU
+# Jupiter   4.951-5.457 AU  or  740.7–816.4     million km  AVG 5.204   AU
+# Saturn    9.075-10.07 AU  or  1.3576–1.5065   billion km  AVG 9.5725  AU
+# Uranus    18.27-20.06 AU  or  2.733–3.001     billion km  AVG 19.165  AU
+# Neptune   29.89-30.47 AU  or  4.471–4.558     billion km  AVG 30.18   AU
+# Pluto     29.7-49.5   AU  or  4.44-7.41       billion km  AVG 39.6    AU
 
-    ln.set_data(xdata, ydata)
-    return ln,
-def show_shape(patch_c, patch_sc):
-    ax = plt.gca()
-    ax.add_patch(patch_c)
-    ax.add_patch(patch_sc)
-    plt.text(30, 27, 'speed:', fontsize = 10)
-    plt.text(30, 22, 'acceleration:', fontsize=10)
-    plt.text(30, 17, 'position: (,)', fontsize=10)
-    plt.text(30, 12, 'disance from center:', fontsize=10)
-    plt.text(30, 7, 'force:', fontsize=10)
-    #plt.axis('scaled')
-    plt.axis([-80, 80, -80, 80])
-    plt.axis('equal')
+ax.set_xlim(-50, 50)
+ax.set_ylim(-50, 50)
 
-    ani = FuncAnimation(fig, update, frames=np.linspace(0, 360, 180),
-                        init_func=init, blit=True)
-    plt.show()
-if __name__ == '__main__':
-    c = create_circle()
-    sc = create_smallcircle()
-    show_shape(c, sc)
+# Set up plot titles and labels
+plt.title("Solar Sail Simulation")
+plt.xlabel("Distance (Billion Kilometers)")
+plt.ylabel("Distance (Billion Kilometers)")
+
+# Create circle patch for the larger circle
+circ_large = plt.Circle((0, 0), 1, color='b', fill=False)
+ax.add_patch(circ_large)
+
+circ_Mercury = plt.Circle((0, 0), 0.4475, color='b', fill=False)
+ax.add_patch(circ_Mercury)
+
+
+# circ_Pluto = plt.Circle((0, 0), 39.6, color='b', fill=False)
+# ax.add_patch(circ_Pluto)
+
+# Create circle patch for the smaller circle
+circ_small = plt.Circle((0, 0), 0.1, color='r', fill=True)
+ax.add_patch(circ_small)
+
+
+plt.text(30, 27, 'speed:', fontsize = 10)
+plt.text(30, 22, 'acceleration:', fontsize=10)
+plt.text(30, 17, 'position: (,)', fontsize=10)
+plt.text(30, 12, 'disance from center:', fontsize=10)
+plt.text(30, 7, 'force:', fontsize=10)
+
+# Initialize variables for animation
+theta = 0
+dt = 0.1
+
+# Define update function for animation
+def update(num):
+    global theta
+    
+    # Update the position of the smaller circle
+    x, y = circ_small.center
+    circ_small.center = (np.cos(theta), np.sin(theta))
+    
+    # Update angle
+    theta += dt
+
+# Create animation
+ani = FuncAnimation(fig, update, frames=np.arange(0, 2*np.pi, dt), repeat=True)
+# plt.rcParams['figure.figsize'] = [10,10]
+plt.show()
