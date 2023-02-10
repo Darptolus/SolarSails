@@ -67,9 +67,19 @@ ax.add_patch(circ_small)
 spacing1 = 0.2
 spacing2 = 0.6
 
-plt.text(-limit + spacing1, -limit+spacing2*6, 'Speed:', fontsize=10)
+# Parameter initialization
+x = 0       # (units)
+y = 0       # (units)
+speed = 0   # (units)
+boom = 4    # (m)
+area = 32   # (m^2)
+mass = 5    # (kg)
+
+plt.text(-limit + spacing1, -limit+spacing2*6, 'Speed: {:.2f}' .format(speed), fontsize=10)
 plt.text(-limit + spacing1, -limit+spacing2*5, 'Acceleration:', fontsize=10)
-plt.text(-limit + spacing1, -limit+spacing2*4, 'Position: (,)', fontsize=10)
+pos_t = plt.text(-limit + spacing1, -limit+spacing2*4, 'Position: {0:.2f}, {1:.2f}' .format(x, y), fontsize=10)
+# pos_t = plt.text(-limit + spacing1, -limit+spacing2*4, 'Position: ('+str(x)+', '+str(y)+')', fontsize=10)
+
 plt.text(-limit + spacing1, -limit+spacing2*3, 'Force:', fontsize=10)
 plt.text(-limit + spacing1, -limit+spacing2*2, 'Disance from earth:', fontsize=10)
 plt.text(-limit + spacing1, -limit+spacing2, 'Disance from sun:', fontsize=10)
@@ -85,7 +95,8 @@ def update(num):
     # Update the position of the smaller circle
     x, y = circ_small.center
     circ_small.center = (np.cos(theta), np.sin(theta))
-    
+    # pos_t.set_text('Position: ('+str(x)+', '+str(y)+')')
+    pos_t.set_text('Position: {0:.2f}, {1:.2f} ' .format(x, y))
     # Update angle
     theta += dt
 
