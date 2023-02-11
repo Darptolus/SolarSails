@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
 # Create figure and axes
-fig, ax = plt.subplots(figsize=(9,9))
+fig, ax = plt.subplots(figsize=(9, 9))
 
 # Set up plot limits
 # The astronomical unit [AU] (150,000,000 km)
@@ -51,11 +51,11 @@ ax.add_patch(circ_Jupiter)
 circ_Saturn = plt.Circle((0, 0), 9.5725, color='b', fill=False)
 ax.add_patch(circ_Saturn)
 
-#circ_Uranus = plt.Circle((0, 0), 1, color='b', fill=False)
-#ax.add_patch(circ_Uranus)
+# circ_Uranus = plt.Circle((0, 0), 1, color='b', fill=False)
+# ax.add_patch(circ_Uranus)
 
-#circ_Neptune = plt.Circle((0, 0), 1, color='b', fill=False)
-#ax.add_patch(circ_Neptune)
+# circ_Neptune = plt.Circle((0, 0), 1, color='b', fill=False)
+# ax.add_patch(circ_Neptune)
 
 # circ_Pluto = plt.Circle((0, 0), 39.6, color='b', fill=False)
 # ax.add_patch(circ_Pluto)
@@ -68,39 +68,45 @@ spacing1 = 0.2
 spacing2 = 0.6
 
 # Parameter initialization
-x = 0       # (units)
-y = 0       # (units)
-speed = 0   # (units)
-boom = 4    # (m)
-area = 32   # (m^2)
-mass = 5    # (kg)
+x = 0  # (units)
+y = 0  # (units)
+speed = 0  # (units)
+accel = 0
+force = 0
+dist_earth = 0
+dist_sun = 0
+boom = 4  # (m)
+area = 32  # (m^2)
+mass = 5  # (kg)
 
-plt.text(-limit + spacing1, -limit+spacing2*6, 'Speed: {:.2f}' .format(speed), fontsize=10)
-plt.text(-limit + spacing1, -limit+spacing2*5, 'Acceleration:', fontsize=10)
-pos_t = plt.text(-limit + spacing1, -limit+spacing2*4, 'Position: {0:.2f}, {1:.2f}' .format(x, y), fontsize=10)
+speed_t = plt.text(-limit + spacing1, -limit + spacing2 * 6, 'Speed: {0:.2f}'.format(speed), fontsize=10)
+accel_t = plt.text(-limit + spacing1, -limit + spacing2 * 5, 'Acceleration: {0:.2f}'.format(accel), fontsize=10)
+pos_t = plt.text(-limit + spacing1, -limit + spacing2 * 4, 'Position: {0:.2f}, {1:.2f}'.format(x, y), fontsize=10)
 # pos_t = plt.text(-limit + spacing1, -limit+spacing2*4, 'Position: ('+str(x)+', '+str(y)+')', fontsize=10)
 
-plt.text(-limit + spacing1, -limit+spacing2*3, 'Force:', fontsize=10)
-plt.text(-limit + spacing1, -limit+spacing2*2, 'Disance from earth:', fontsize=10)
-plt.text(-limit + spacing1, -limit+spacing2, 'Disance from sun:', fontsize=10)
+force_t = plt.text(-limit + spacing1, -limit + spacing2 * 3, 'Force: {0:.2f}'.format(force), fontsize=10)
+diste_t = plt.text(-limit + spacing1, -limit + spacing2 * 2, 'Distance from earth: {0:.2f}'.format(dist_earth), fontsize=10)
+dists_t = plt.text(-limit + spacing1, -limit + spacing2, 'Distance from sun: {0:.2f}'.format(dist_sun), fontsize=10)
 
 # Initialize variables for animation
 theta = 0
 dt = 0.1
 
+
 # Define update function for animation
 def update(num):
     global theta
-    
+
     # Update the position of the smaller circle
     x, y = circ_small.center
     circ_small.center = (np.cos(theta), np.sin(theta))
     # pos_t.set_text('Position: ('+str(x)+', '+str(y)+')')
-    pos_t.set_text('Position: {0:.2f}, {1:.2f} ' .format(x, y))
+    pos_t.set_text('Position: {0:.2f}, {1:.2f} '.format(x, y))
     # Update angle
     theta += dt
 
+
 # Create animation
-ani = FuncAnimation(fig, update, frames=np.arange(0, 2*np.pi, dt), repeat=True)
+ani = FuncAnimation(fig, update, frames=np.arange(0, 2 * np.pi, dt), repeat=True)
 # plt.rcParams['figure.figsize'] = [10,10]
 plt.show()
