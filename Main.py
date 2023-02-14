@@ -1,9 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
+from datetime import datetime
+from datetime import timedelta
 
 # Create figure and axes
 fig, ax = plt.subplots(figsize=(9, 9))
+ax.set_facecolor('black')
 
 # Set up plot limits
 # The astronomical unit [AU] (150,000,000 km)
@@ -30,7 +33,7 @@ plt.xlabel("Distance (Billion Kilometers)")
 plt.ylabel("Distance (Billion Kilometers)")
 
 # Create circle patch for the planets orbits & sun
-circ_Sun = plt.Circle((0, 0), 0.00465047, color='r', fill=True)
+circ_Sun = plt.Circle((0, 0), 0.00465047, color='y', fill=True)
 ax.add_patch(circ_Sun)
 
 circ_Mercury = plt.Circle((0, 0), 0.4475, color='b', fill=False)
@@ -60,53 +63,76 @@ ax.add_patch(circ_Saturn)
 # circ_Pluto = plt.Circle((0, 0), 39.6, color='b', fill=False)
 # ax.add_patch(circ_Pluto)
 
-# Create circle patch for the smaller circle
+# Create patches for the solar sail
 circ_small = plt.Circle((0, 0), 0.1, color='r', fill=True)
 ax.add_patch(circ_small)
 
 spacing1 = 0.2
 spacing2 = 0.6
+spacing3 = spacing2/2
+spacing4 = 7
 
 # Parameter initialization
-x = 0  # (units)
-y = 0  # (units)
-speed = 0  # (units)
-accel = 0
-force = 0
-dist_earth = 0
-dist_sun = 0
-boom = 4  # (m)
-area = 32  # (m^2)
-mass = 5  # (kg)
+x = 0               # (units)
+y = 0               # (units)
+speed = 0           # (units)
+accel = 0           # (units)
+force = 0           # (units)
+orient = 0          # (units)
+dist_earth = 0      # (units)
+dist_sun = 0        # (units)
+boom = 4            # (m)
+area = 32           # (m^2)
+mass = 5            # (kg)
+i_s = 7
 
-speed_t = plt.text(-limit + spacing1, -limit + spacing2 * 6, 'Speed: {0:.2f}'.format(speed), fontsize=10)
-accel_t = plt.text(-limit + spacing1, -limit + spacing2 * 5, 'Acceleration: {0:.2f}'.format(accel), fontsize=10)
-pos_t = plt.text(-limit + spacing1, -limit + spacing2 * 4, 'Position: {0:.2f}, {1:.2f}'.format(x, y), fontsize=10)
-# pos_t = plt.text(-limit + spacing1, -limit+spacing2*4, 'Position: ('+str(x)+', '+str(y)+')', fontsize=10)
+time_delta = timedelta(days=0, seconds=0, microseconds=0, milliseconds=0, minutes=0, hours=0, weeks=0)
+time = datetime(0,0,0)
 
-force_t = plt.text(-limit + spacing1, -limit + spacing2 * 3, 'Force: {0:.2f}'.format(force), fontsize=10)
-diste_t = plt.text(-limit + spacing1, -limit + spacing2 * 2, 'Distance from earth: {0:.2f}'.format(dist_earth), fontsize=10)
-dists_t = plt.text(-limit + spacing1, -limit + spacing2, 'Distance from sun: {0:.2f}'.format(dist_sun), fontsize=10)
+# Text initialization
+force_t = plt.text(-limit + spacing1, -spacing3-limit + spacing2 * i_s, 'Force: {0:.2f}'.format(force), fontsize=10, color = 'g')
+i_s -= 1
+speed_t = plt.text(-limit + spacing1, -spacing3-limit + spacing2 * i_s, 'Speed: {0:.2f}'.format(speed), fontsize=10, color = 'g')
+i_s -= 1
+accel_t = plt.text(-limit + spacing1, -spacing3-limit + spacing2 * i_s, 'Acceleration: {0:.2f}'.format(accel), fontsize=10, color = 'g')
+i_s -= 1
+orien_t = plt.text(-limit + spacing1, -spacing3-limit + spacing2 * i_s, 'Orientation: {0:.2f}'.format(orient), fontsize=10, color = 'g')
+i_s -= 1
+posit_t = plt.text(-limit + spacing1, -spacing3-limit + spacing2 * i_s, 'Position: {0:.2f}, {1:.2f}'.format(x, y), fontsize=10, color = 'g')
+i_s -= 1
+diste_t = plt.text(-limit + spacing1, -spacing3-limit + spacing2 * i_s, 'Distance from earth: {0:.2f}'.format(dist_earth), fontsize=10, color = 'g')
+i_s -= 1
+dists_t = plt.text(-limit + spacing1, -spacing3-limit + spacing2 * i_s, 'Distance from sun: {0:.2f}'.format(dist_sun), fontsize=10, color = 'g')
+
+time_t = plt.text(limit - spacing4, -spacing3-limit + spacing2 * i_s, 'Elapsed time: {0}y {1}m {2}d {3}h '.format(time.year, time.month, time.day, time.hour ), fontsize=10, color = 'g')
 
 # Initialize variables for animation
 theta = 0
 dt = 0.1
 
+# To maintain an orbit that is 22,223 miles (35,786 km) above Earth, the satellite must orbit at a speed of about 7,000 mph (11,300 kph).
+
+# Define update function for physics
+def update_phys():
+    global theta
+
+    x, y  = np.cos(theta), np.sin(theta)
+    return x, y
 
 # Define update function for animation
-def update(num):
+def update_anim(num):
     global theta
 
     # Update the position of the smaller circle
     x, y = circ_small.center
-    circ_small.center = (np.cos(theta), np.sin(theta))
+    circ_small.center = update_phys()
     # pos_t.set_text('Position: ('+str(x)+', '+str(y)+')')
-    pos_t.set_text('Position: {0:.2f}, {1:.2f} '.format(x, y))
+    posit_t.set_text('Position: {0:.2f}, {1:.2f} '.format(x, y))
     # Update angle
     theta += dt
 
 
 # Create animation
-ani = FuncAnimation(fig, update, frames=np.arange(0, 2 * np.pi, dt), repeat=True)
+ani = FuncAnimation(fig, update_anim, frames=np.arange(0, 2 * np.pi, dt), repeat=True)
 # plt.rcParams['figure.figsize'] = [10,10]
 plt.show()
