@@ -22,7 +22,7 @@ ax.set_facecolor('black')
 # Neptune   29.89-30.47 AU  or  4.471–4.558     billion km  AVG 30.18   AU
 # Pluto     29.7-49.5   AU  or  4.44-7.41       billion km  AVG 39.6    AU
 
-limit = 12
+limit = 1.5
 
 ax.set_xlim(-limit, limit)
 ax.set_ylim(-limit, limit)
@@ -33,44 +33,59 @@ plt.xlabel("Distance (Billion Kilometers)")
 plt.ylabel("Distance (Billion Kilometers)")
 
 # Create circle patch for the planets orbits & sun
-circ_Sun = plt.Circle((0, 0), 0.00465047, color='y', fill=True)
-ax.add_patch(circ_Sun)
+if (limit>0.00465047):
+    circ_Sun = plt.Circle((0, 0), 0.00465047, color='y', fill=True)
+    ax.add_patch(circ_Sun)
 
-circ_Mercury = plt.Circle((0, 0), 0.4475, color='b', fill=False)
-ax.add_patch(circ_Mercury)
+if (limit>0.4475):
+    circ_Mercury = plt.Circle((0, 0), 0.4475, color='b', fill=False)
+    ax.add_patch(circ_Mercury)
 
-circ_Venus = plt.Circle((0, 0), 0.723, color='b', fill=False)
-ax.add_patch(circ_Venus)
+if (limit>0.0723):
+    circ_Venus = plt.Circle((0, 0), 0.723, color='b', fill=False)
+    ax.add_patch(circ_Venus)
 
-circ_Earth = plt.Circle((0, 0), 1, color='b', fill=False)
-ax.add_patch(circ_Earth)
+if (limit>1):
+    circ_Earth = plt.Circle((0, 0), 1, color='b', fill=False)
+    ax.add_patch(circ_Earth)
 
-circ_Mars = plt.Circle((0, 0), 1.524, color='b', fill=False)
-ax.add_patch(circ_Mars)
+if (limit>1.524):
+    circ_Mars = plt.Circle((0, 0), 1.524, color='b', fill=False)
+    ax.add_patch(circ_Mars)
 
-circ_Jupiter = plt.Circle((0, 0), 5.204, color='b', fill=False)
-ax.add_patch(circ_Jupiter)
+if (limit>5.204):
+    circ_Jupiter = plt.Circle((0, 0), 5.204, color='b', fill=False)
+    ax.add_patch(circ_Jupiter)
 
-circ_Saturn = plt.Circle((0, 0), 9.5725, color='b', fill=False)
-ax.add_patch(circ_Saturn)
+if (limit>9.5725):
+    circ_Saturn = plt.Circle((0, 0), 9.5725, color='b', fill=False)
+    ax.add_patch(circ_Saturn)
 
-# circ_Uranus = plt.Circle((0, 0), 1, color='b', fill=False)
-# ax.add_patch(circ_Uranus)
+if (limit >19.165):
+    circ_Uranus = plt.Circle((0, 0), 19.165, color='b', fill=False)
+    ax.add_patch(circ_Uranus)
 
-# circ_Neptune = plt.Circle((0, 0), 1, color='b', fill=False)
-# ax.add_patch(circ_Neptune)
+if (limit >30.18):
+    circ_Neptune = plt.Circle((0, 0), 30.18, color='b', fill=False)
+    ax.add_patch(circ_Neptune)
 
-# circ_Pluto = plt.Circle((0, 0), 39.6, color='b', fill=False)
-# ax.add_patch(circ_Pluto)
+if (limit>39.6):
+    circ_Pluto = plt.Circle((0, 0), 39.6, color='b', fill=False)
+    ax.add_patch(circ_Pluto)
+
+
 
 # Create patches for the solar sail
-circ_small = plt.Circle((0, 0), 0.1, color='r', fill=True)
-ax.add_patch(circ_small)
+#circ_small = plt.Circle((0, 0), 0.1, color='r', fill=True)
+#ax.add_patch(circ_small)
 
-spacing1 = 0.2
-spacing2 = 0.6
+planet_Earth = plt.Circle((0, 0), limit/15, color='r', fill=True)
+ax.add_patch(planet_Earth)
+
+spacing1 = 0.016 * limit
+spacing2 = 0.05 * limit
 spacing3 = spacing2/2
-spacing4 = 7
+spacing4 = 0.6 * limit
 
 # Parameter initialization
 x = 0               # (units)
@@ -86,8 +101,8 @@ area = 32           # (m^2)
 mass = 5            # (kg)
 i_s = 7
 
-time_delta = timedelta(days=0, seconds=0, microseconds=0, milliseconds=0, minutes=0, hours=0, weeks=0)
-time = datetime(0,0,0)
+time_delta = timedelta(days=0, seconds=0, microseconds=0, milliseconds=0, minutes=0, hours=1, weeks=0)
+time = datetime(1,1,1,0,0,0)
 
 # Text initialization
 force_t = plt.text(-limit + spacing1, -spacing3-limit + spacing2 * i_s, 'Force: {0:.2f}'.format(force), fontsize=10, color = 'g')
@@ -104,7 +119,7 @@ diste_t = plt.text(-limit + spacing1, -spacing3-limit + spacing2 * i_s, 'Distanc
 i_s -= 1
 dists_t = plt.text(-limit + spacing1, -spacing3-limit + spacing2 * i_s, 'Distance from sun: {0:.2f}'.format(dist_sun), fontsize=10, color = 'g')
 
-time_t = plt.text(limit - spacing4, -spacing3-limit + spacing2 * i_s, 'Elapsed time: {0}y {1}m {2}d {3}h '.format(time.year, time.month, time.day, time.hour ), fontsize=10, color = 'g')
+time_t = plt.text(limit - spacing4, -spacing3-limit + spacing2 * i_s, 'Elapsed time: {0}y {1}m {2}d {3}h '.format(time.year-1, time.month-1, time.day-1, time.hour-1 ), fontsize=10, color = 'g')
 
 # Initialize variables for animation
 theta = 0
@@ -121,15 +136,17 @@ def update_phys():
 
 # Define update function for animation
 def update_anim(num):
-    global theta
+    global theta, time, time_delta
 
     # Update the position of the smaller circle
-    x, y = circ_small.center
-    circ_small.center = update_phys()
+    x, y = planet_Earth.center
+    planet_Earth.center = update_phys()
     # pos_t.set_text('Position: ('+str(x)+', '+str(y)+')')
     posit_t.set_text('Position: {0:.2f}, {1:.2f} '.format(x, y))
+    time_t.set_text('Elapsed time: {0}y {1}m {2}d {3}h'.format(time.year-1, time.month-1, time.day-1, time.hour ))
     # Update angle
     theta += dt
+    time += time_delta
 
 
 # Create animation
