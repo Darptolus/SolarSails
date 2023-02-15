@@ -79,8 +79,12 @@ if (limit>39.6):
 #circ_small = plt.Circle((0, 0), 0.1, color='r', fill=True)
 #ax.add_patch(circ_small)
 
-planet_Earth = plt.Circle((0, 0), limit/15, color='r', fill=True)
+earth_size = limit/15
+planet_Earth = plt.Circle((0, 0), earth_size, color='r', fill=True)
 ax.add_patch(planet_Earth)
+
+solar_sail = plt.Circle((0, 0), limit/100, color='r', fill=True)
+ax.add_patch(solar_sail)
 
 spacing1 = 0.016 * limit
 spacing2 = 0.05 * limit
@@ -88,8 +92,10 @@ spacing3 = spacing2/2
 spacing4 = 0.6 * limit
 
 # Parameter initialization
-x = 0               # (units)
-y = 0               # (units)
+x_earth = 0               # (units)
+y_earth = 0               # (units)
+x_ss = 0
+y_ss = 0
 speed = 0           # (units)
 accel = 0           # (units)
 force = 0           # (units)
@@ -113,7 +119,7 @@ accel_t = plt.text(-limit + spacing1, -spacing3-limit + spacing2 * i_s, 'Acceler
 i_s -= 1
 orien_t = plt.text(-limit + spacing1, -spacing3-limit + spacing2 * i_s, 'Orientation: {0:.2f}'.format(orient), fontsize=10, color = 'g')
 i_s -= 1
-posit_t = plt.text(-limit + spacing1, -spacing3-limit + spacing2 * i_s, 'Position: {0:.2f}, {1:.2f}'.format(x, y), fontsize=10, color = 'g')
+posit_t = plt.text(-limit + spacing1, -spacing3-limit + spacing2 * i_s, 'Position: {0:.2f}, {1:.2f}'.format(x_ss, y_ss), fontsize=10, color = 'g')
 i_s -= 1
 diste_t = plt.text(-limit + spacing1, -spacing3-limit + spacing2 * i_s, 'Distance from earth: {0:.2f}'.format(dist_earth), fontsize=10, color = 'g')
 i_s -= 1
@@ -124,30 +130,43 @@ time_t = plt.text(limit - spacing4, -spacing3-limit + spacing2 * i_s, 'Elapsed t
 # Initialize variables for animation
 theta = 0
 dt = 0.1
+dt_ss = 0.5
+theta_ss = 0
 
 # To maintain an orbit that is 22,223 miles (35,786 km) above Earth, the satellite must orbit at a speed of about 7,000 mph (11,300 kph).
 
 # Define update function for physics
-def update_phys():
+def update_earth():
     global theta
 
-    x, y  = np.cos(theta), np.sin(theta)
-    return x, y
+    x_earth, y_earth = np.cos(theta), np.sin(theta)
+    return x_earth, y_earth
+
+def update_ss(x_o,y_o):
+    global theta_ss
+    # x_ss, y_ss = x_o + earth_size + limit/12, y_o + earth_size + limit/12
+    ss_orbit = earth_size + limit / 12
+    x_ss, y_ss = x_o + ss_orbit * np.cos(theta_ss), y_o + ss_orbit * np.sin(theta_ss)
+    return x_ss, y_ss
 
 # Define update function for animation
 def update_anim(num):
-    global theta, time, time_delta
+    global theta, theta_ss, time, time_delta
 
     # Update the position of the smaller circle
-    x, y = planet_Earth.center
-    planet_Earth.center = update_phys()
+    x_earth, y_earth = planet_Earth.center
+    planet_Earth.center = update_earth()
+
+    x_ss, y_ss = solar_sail.center
+    solar_sail.center = update_ss(x_earth, y_earth)
+
     # pos_t.set_text('Position: ('+str(x)+', '+str(y)+')')
-    posit_t.set_text('Position: {0:.2f}, {1:.2f} '.format(x, y))
+    posit_t.set_text('Position: {0:.2f}, {1:.2f} '.format(x_ss, y_ss))
     time_t.set_text('Elapsed time: {0}y {1}m {2}d {3}h'.format(time.year-1, time.month-1, time.day-1, time.hour ))
     # Update angle
     theta += dt
     time += time_delta
-
+    theta_ss += dt_ss
 
 # Create animation
 ani = FuncAnimation(fig, update_anim, frames=np.arange(0, 2 * np.pi, dt), repeat=True)
